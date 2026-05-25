@@ -1,0 +1,2 @@
+let favorites = [];
+export { favorites };
