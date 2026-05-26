@@ -1,2 +1,0 @@
-let favorites = [];
-export { favorites };

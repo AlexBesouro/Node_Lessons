@@ -1,47 +1,103 @@
-import { favorites } from "../../database/mockDB.js";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const filePath = path.join(__dirname, "../..", "database", "mockDB.json");
+
+async function fetchAllMoviesFromApi() {
+    const response = await fetch(`${process.env.API_MOVIES}`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch movies: ${response.statusText}`);
+    }
+    const movies = await response.json();
+    return movies.data.map((movie) => ({
+        id: movie.id,
+        title: movie.original_title,
+        year: movie.release_date ? movie.release_date.slice(-4) : "N/A",
+        poster: movie.poster_path,
+    }));
+}
+
+async function readFavorites() {
+    try {
+        const rawData = await fs.readFile(filePath, "utf-8");
+        if (!rawData.trim()) {
+            return [];
+        }
+        const data = JSON.parse(rawData);
+        return Array.isArray(data) ? data : data.favorites || [];
+    } catch (error) {
+        console.error(`Error file reading, ${error.message}`);
+        return [];
+    }
+}
+
 
 const getMovies = async (req, res) => {
-    // function to fetch movies from an external API and return them in a formatted way
     try {
-        const response = await fetch(`${process.env.API_MOVIES}`);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch movies: ${response.statusText}`);
-        }
-        const movies = await response.json();
-        const limitedMovies = movies.data.slice(0, 20);
-        const formattedMovies = limitedMovies.map((movie) => {
-            return {
-                id: movie.id,
-                title: movie.original_title,
-                year: movie.release_date ? movie.release_date.split("-")[0] : "N/A",
-                poster: movie.poster_path,
-            };
-        });
-        res.json(formattedMovies);
+        const allMovies = await fetchAllMoviesFromApi();
+        const limitedMovies = allMovies.slice(0, 20); 
+        res.json(limitedMovies);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
 
-const getFavorites = (req, res) => {
-    // function to return the list of favorite movies based on the IDs stored in the favorites array
-    const favoriteMovies = movies.filter((movie) => favorites.includes(movie.id));
-    res.json(favoriteMovies);
-};
-const addFavorite = (req, res) => {
-    // function to add a movie ID to the favorites array if it's not already present and return the updated list of favorites
-    const { id } = req.body;
-    if (!favorites.includes(id)) {
-        favorites.push(id);
+const getFavorites = async (req, res) => {
+    try {
+        const favorites = await readFavorites(); 
+        res.json(favorites);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-    res.status(201).json({ success: true, favorites: favorites });
 };
 
-const deleteFavorite = (req, res) => {
-    //function to remove a movie ID from the favorites array based on the ID provided in the request parameters and return the updated list of favorites
-    const movieId = parseInt(req.params.id);
-    favorites = favorites.filter((id) => id !== movieId);
-    res.json({ success: true, favorites: favorites });
+
+const addFavorite = async (req, res) => {
+    try {
+        const favoritePayload = req.body;
+        const { id } = favoritePayload;
+        const favorites = await readFavorites();
+
+        let movieToAdd = favoritePayload && favoritePayload.title ? favoritePayload : null;
+
+        if (!movieToAdd) {
+            const allMovies = await fetchAllMoviesFromApi();
+            movieToAdd = allMovies.find((movie) => String(movie.id) === String(id));
+        }
+
+        if (!movieToAdd) {
+            return res.status(404).json({ error: "Movie not found" });
+        }
+
+        const alreadyExists = favorites.some((movie) => String(movie.id) === String(movieToAdd.id));
+
+        if (!alreadyExists) {
+            favorites.push(movieToAdd);
+            await fs.writeFile(filePath, JSON.stringify(favorites, null, 4), "utf-8");
+            return res.status(201).json(favorites);
+        }
+
+        return res.status(200).json(favorites);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+const deleteFavorite = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const favorites = await readFavorites();
+        const updatedFavorites = favorites.filter((movie) => String(movie.id) !== String(id));
+
+        await fs.writeFile(filePath, JSON.stringify(updatedFavorites, null, 4), "utf-8");
+        return res.status(200).json(updatedFavorites);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+    }
 };
 
 export { getMovies, getFavorites, addFavorite, deleteFavorite };
