@@ -1,9 +1,15 @@
 import { MovieList } from "./components/MovieList";
 import { useMovie } from "./hooks/useMovie.js";
 import styles from "./App.module.css";
+import { useFavorites } from "./hooks/useFavorites.js";
+import { useNotes } from "./hooks/useNotes.js";
 
 function App() {
-    const { movies, favorites, toggleFavorite } = useMovie();
+    const { movies } = useMovie();
+    const { favorites, toggleFavorite, updateNote } = useFavorites();
+    const { note, handleNoteChanging, clearNoteInput } = useNotes();
+    // console.log(movies);
+    // console.log(favorites);
 
     return (
         <div className={styles.container}>
@@ -11,7 +17,16 @@ function App() {
             <hr />
 
             <h2 className={styles.subheading}>My favorites</h2>
-            <MovieList movies={favorites} favorites={favorites} onToggleFavorite={toggleFavorite} />
+            <MovieList
+                movies={favorites}
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                updateNote={updateNote}
+                note={note}
+                onNoteChange={handleNoteChanging}
+                clearNoteInput={clearNoteInput}
+                isFavoriteSection={true}
+            />
 
             <hr />
 
