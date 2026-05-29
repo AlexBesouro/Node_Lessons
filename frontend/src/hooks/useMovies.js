@@ -18,6 +18,7 @@ function useMovie() {
         fetchMovies();
     }, []);
 
-    return { movies };
+    return { movies, setMovies };
 }
+
 export { useMovie, BASE_URL };

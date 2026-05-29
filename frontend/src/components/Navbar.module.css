@@ -1,0 +1,39 @@
+.navigation {
+    display: flex;
+    gap: 2.5rem; /* Немного увеличим расстояние для воздуха */
+    justify-content: center;
+    padding: 1.2rem;
+    list-style: none;
+}
+
+.link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition:
+        color 0.3s ease,
+        transform 0.2s ease;
+    position: relative;
+    padding: 0.5rem 0;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.link:hover {
+    color: var(--text-primary);
+}
+
+.active {
+    color: var(--accent) !important;
+}
+
+@keyframes slideIn {
+    from {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+    to {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+}

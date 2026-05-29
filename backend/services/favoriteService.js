@@ -11,13 +11,13 @@ async function readFavorites() {
             return [];
         }
         const data = JSON.parse(rawData);
-        // console.log(data);
         return Array.isArray(data) ? data : [];
     } catch (error) {
         console.error(`Error file reading, ${error.message}`);
         return [];
     }
 }
+// console.log(await readFavorites());
 
 async function writeFavorites(data) {
     try {

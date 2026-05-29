@@ -1,12 +1,12 @@
 import fs from "fs/promises";
-
 import path from "path";
 import { fileURLToPath } from "url";
 import { readFavorites, writeFavorites } from "../services/favoriteService.js";
-import { fetchAllMoviesFromApi } from "../services/fakeryService.js";
-import { error } from "console";
+import { fetchMoviesFromApi } from "../services/omdbService.js";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const filePath = path.join(__dirname, "../..", "database", "mockDB.json");
+
 const getFavorites = async (req, res) => {
     try {
         const favorites = await readFavorites();
@@ -24,7 +24,7 @@ const addFavorite = async (req, res) => {
         let movieToAdd = favoritePayload && favoritePayload.title ? favoritePayload : null;
 
         if (!movieToAdd) {
-            const allMovies = await fetchAllMoviesFromApi();
+            const allMovies = await fetchMoviesFromApi();
             movieToAdd = allMovies.find((movie) => String(movie.id) === String(id));
         }
 
@@ -61,21 +61,21 @@ const deleteFavorite = async (req, res) => {
     }
 };
 
-const updateFavorites = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { note } = req.body;
-        const favorites = await readFavorites();
-        const movieIndex = favorites.findIndex((movie) => String(movie.id) === String(id));
-        if (movieIndex === -1) {
-            return res.status(404).json({ error: "Movie not found" });
-        }
-        favorites[movieIndex].note = note;
-        await writeFavorites(favorites);
-        return res.json(favorites);
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-    }
-};
+// const updateFavorites = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { note } = req.body;
+//         const favorites = await readFavorites();
+//         const movieIndex = favorites.findIndex((movie) => String(movie.id) === String(id));
+//         if (movieIndex === -1) {
+//             return res.status(404).json({ error: "Movie not found" });
+//         }
+//         favorites[movieIndex].note = note;
+//         await writeFavorites(favorites);
+//         return res.json(favorites);
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message });
+//     }
+// };
 
-export { addFavorite, deleteFavorite, getFavorites, updateFavorites };
+export { getFavorites, addFavorite, deleteFavorite };

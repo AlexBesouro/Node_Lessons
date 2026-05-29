@@ -1,17 +1,18 @@
 import styles from "./MovieCard.module.css";
+import { AddToFavoritesBtn } from "./AddToFavoritesBtn";
 
 function MovieCard({
     movie,
-    isFavorite,
-    onToggleFavorite,
-    updateNote,
-    note, // Объект со стейтами инпутов
-    onNoteChange,
-    clearNoteInput,
-    isFavoriteSection,
+    // isFavorite,
+    // onToggleFavorite,
+    // updateNote,
+    // note, // Объект со стейтами инпутов
+    // onNoteChange,
+    // clearNoteInput,
+    // isFavoriteSection,
 }) {
     // Получаем текущее значение инпута именно для этого фильма
-    const currentInputValue = note?.[movie.id] || "";
+    // const currentInputValue = note?.[movie.id] || "";
 
     return (
         <div className={styles["card-container"]}>
@@ -20,14 +21,17 @@ function MovieCard({
             </div>
             <h3 className={styles["movie-title"]}>{movie.title}</h3>
             <p className={styles["movie-year"]}>{movie.year}</p>
-            <p className={styles["personal-note"]}>Note: {movie.note || "N/A"}</p>
+            <p className={styles["movie-type"]}>{movie.type}</p>
+            <span>
+                <AddToFavoritesBtn movie={movie} />
+            </span>
 
-            <button className={styles["toggle-favorite-btn"]} onClick={() => onToggleFavorite(movie)}>
+            {/* <button className={styles["toggle-favorite-btn"]} onClick={() => onToggleFavorite(movie)}>
                 {isFavorite ? "Remove from favorites" : "Add to favorites"}
-            </button>
+            </button> */}
 
             {/* Рендерим инпут и кнопку сохранения только в блоке избранного */}
-            {isFavoriteSection && (
+            {/* {isFavoriteSection && (
                 <div className={styles["note-edit-container"]}>
                     <input
                         type="text"
@@ -47,7 +51,7 @@ function MovieCard({
                         Ok
                     </button>
                 </div>
-            )}
+            )} */}
         </div>
     );
 }

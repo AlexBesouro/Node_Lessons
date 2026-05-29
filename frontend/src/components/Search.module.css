@@ -1,0 +1,67 @@
+.search-form {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.search-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.search-form input,
+.search-form select {
+    width: 100%;
+    min-height: 2.8rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    background: var(--surface-strong);
+    color: var(--text);
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        background var(--transition);
+}
+
+.search-form input:focus,
+.search-form select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(100, 219, 255, 0.12);
+}
+
+.search-form button {
+    justify-self: start;
+    padding: 0.95rem 1.5rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--surface);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition:
+        transform var(--transition),
+        box-shadow var(--transition),
+        filter var(--transition);
+}
+
+.search-form button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 16px 36px rgba(100, 219, 255, 0.24);
+}
+
+@media (min-width: 640px) {
+    .search-form {
+        grid-template-columns: 1fr 1fr auto;
+        align-items: end;
+    }
+}
