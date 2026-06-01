@@ -2,36 +2,63 @@ import { MovieList } from "../components/MovieList";
 import { useMovie } from "../hooks/useMovies";
 import styles from "./Home.module.css";
 import { Search } from "../components/Search";
-import { BASE_URL } from "../hooks/useMovies";
+import { useState } from "react";
+import { SearchById } from "../components/SearchByID";
+const popularKeywords = [
+    "space",
+    "world",
+    "star",
+    "man",
+    "love",
+    "dark",
+    "king",
+    "dead",
+    "night",
+    "last",
+    "black",
+    "war",
+    "time",
+    "agent",
+];
+const randomKeyword = popularKeywords[Math.floor(Math.random() * popularKeywords.length)];
 function Home() {
-    const { movies, setMovies } = useMovie();
-    async function handleSearch(searchData) {
-        try {
-            const queryParams = new URLSearchParams();
-            if (searchData.movieTitle) {
-                queryParams.append("title", searchData.movieTitle);
-            }
-            if (searchData.movieYear) {
-                queryParams.append("year", searchData.movieYear);
-            }
-            if (searchData.type) {
-                queryParams.append("type", searchData.type);
-            }
-            const response = await fetch(`${BASE_URL}movies?${queryParams.toString()}`);
-            if (!response.ok) {
-                throw new Error(`Fetch failed: ${response.statusText}`);
-            }
-            const data = await response.json();
-            setMovies(data);
-        } catch (error) {
-            console.error("Searching error", error);
-        }
+    const [searchParams, setSearchParams] = useState({ title: randomKeyword, year: null, type: null, id: null });
+    const { movies, page, setPage, totalPages, nextPage, prevPage, hasMovies } = useMovie(searchParams);
+    function handleSearch(searchData) {
+        setPage(1);
+        setSearchParams({
+            title: searchData.movieTitle || "",
+            year: searchData.movieYear || "",
+            type: searchData.type || "",
+            id: null,
+        });
+    }
+    async function handleSearchById(imdbId) {
+        setPage(1);
+        setSearchParams({
+            title: null,
+            year: null,
+            type: null,
+            id: imdbId,
+        });
     }
     return (
         <div className={styles["container"]}>
             <h1 className={styles["title"]}>Movies</h1>
             <Search onSearchSubmit={handleSearch} />
+            <SearchById onSearchSubmit={handleSearchById} />
             <MovieList movies={movies} />
+            {hasMovies && !searchParams.id && (
+                <div className={styles["pagination"]}>
+                    <button onClick={prevPage} disabled={page === 1}>
+                        Prev
+                    </button>
+                    <span>{page}</span>
+                    <button onClick={nextPage} disabled={page >= totalPages}>
+                        Next
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

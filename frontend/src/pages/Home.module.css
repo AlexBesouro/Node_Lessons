@@ -1,11 +1,50 @@
-
 .container {
-  padding: 2rem 0;
+    padding: 2rem 0;
 }
 
 .title {
-  margin: 0 0 1.5rem;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+    margin: 0 0 1.5rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+}
+
+.pagination button {
+    padding: 0.8rem 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.pagination button:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--surface);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--action-shadow);
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 2rem;
+    text-align: center;
 }

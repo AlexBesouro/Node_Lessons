@@ -9,6 +9,10 @@
     --muted: #9aa7bf;
     --accent: #64dbff;
     --accent-soft: rgba(100, 219, 255, 0.16);
+    --input-border: rgba(255, 255, 255, 0.08);
+    --focus-ring: rgba(100, 219, 255, 0.12);
+    --surface-hover: rgba(255, 255, 255, 0.05);
+    --action-shadow: 0 16px 36px rgba(100, 219, 255, 0.24);
     --border: rgba(255, 255, 255, 0.08);
     --shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
     --radius: 22px;
@@ -28,6 +32,10 @@
     --muted: #5b667a;
     --accent: #2563eb;
     --accent-soft: rgba(37, 99, 235, 0.14);
+    --input-border: rgba(20, 29, 51, 0.12);
+    --focus-ring: rgba(37, 99, 235, 0.16);
+    --surface-hover: rgba(20, 29, 51, 0.04);
+    --action-shadow: 0 16px 36px rgba(37, 99, 235, 0.24);
     --border: rgba(20, 29, 51, 0.12);
     --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
 }

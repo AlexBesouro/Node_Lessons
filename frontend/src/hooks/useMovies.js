@@ -1,24 +1,47 @@
 import { useState, useEffect } from "react";
-const BASE_URL = `${import.meta.env.VITE_API_PATH}${import.meta.env.VITE_API_PORT}api/`;
-function useMovie() {
+import { BASE_URL } from "../config/api";
+import { fetchMovies } from "../api/movieApi";
+
+function useMovie(searchParams) {
     const [movies, setMovies] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalResults, setTotalResults] = useState(0);
+
     useEffect(() => {
-        async function fetchMovies() {
+        let isMounted = true;
+        async function loadMovies() {
             try {
-                const response = await fetch(`${BASE_URL}movies`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch movies: ${response.statusText}`);
+                let data;
+                if (searchParams.id) {
+                    const response = await fetch(`${BASE_URL}movies/${searchParams.id}`);
+                    const movieData = await response.json();
+                    data = { movies: [movieData], totalResults: 1 };
+                } else {
+                    data = await fetchMovies({
+                        title: searchParams.title,
+                        year: searchParams.year,
+                        type: searchParams.type,
+                        page,
+                    });
                 }
-                const data = await response.json();
-                setMovies(data);
+
+                if (isMounted) {
+                    setMovies(data.movies || []);
+                    setTotalResults(Number(data.totalResults || 0));
+                }
             } catch (error) {
-                console.error(`Error fetching movies: ${error.message}`);
+                console.error(`Error in useMovie hook: ${error.message}`);
             }
         }
-        fetchMovies();
-    }, []);
-
-    return { movies, setMovies };
+        loadMovies();
+        return () => {
+            isMounted = false;
+        };
+    }, [searchParams, page]);
+    const nextPage = () => setPage((prev) => prev + 1);
+    const prevPage = () => setPage((prev) => Math.max(prev - 1, 1));
+    const totalPages = Math.ceil(totalResults / 10);
+    return { movies, setMovies, page, setPage, totalPages, nextPage, prevPage, hasMovies: movies.length > 0 };
 }
 
-export { useMovie, BASE_URL };
+export { useMovie };

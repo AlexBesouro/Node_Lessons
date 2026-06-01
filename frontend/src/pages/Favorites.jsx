@@ -1,5 +1,5 @@
 import { MovieList } from "../components/MovieList";
-import styles from "./Home.module.css";
+import styles from "./Favorites.module.css";
 import { useFavorites } from "../hooks/useFavorites";
 function Favorites() {
     const { favorites } = useFavorites();

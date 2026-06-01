@@ -1,4 +1,4 @@
-import { BASE_URL } from "./useMovies";
+import { BASE_URL } from "../config/api";
 import { useState, useEffect } from "react";
 
 function useToggleFavorites(movie) {

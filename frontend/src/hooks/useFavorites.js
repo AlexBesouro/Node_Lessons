@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BASE_URL } from "./useMovies";
+import { BASE_URL } from "../config/api";
 
 function useFavorites() {
     const [favorites, setFavorites] = useState([]);

@@ -8,23 +8,7 @@ function MovieList({ movies }) {
     return (
         <div className={styles["list-container"]}>
             {movies.map((movie) => {
-                // const isFavorite = favorites.some((favMovie) => favMovie.id === movie.id);
-                // {
-                //     console.log(isFavorite);
-                // }
-                return (
-                    <MovieCard
-                        key={movie.id}
-                        movie={movie}
-                        // isFavorite={isFavorite}
-                        // onToggleFavorite={onToggleFavorite}
-                        // updateNote={updateNote}
-                        // note={note}
-                        // onNoteChange={onNoteChange}
-                        // clearNoteInput={clearNoteInput}
-                        // isFavoriteSection={isFavoriteSection}
-                    ></MovieCard>
-                );
+                return <MovieCard key={movie.id} movie={movie}></MovieCard>;
             })}
         </div>
     );
