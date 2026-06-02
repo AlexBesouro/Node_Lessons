@@ -1,4 +1,4 @@
-import { BASE_URL } from "../config/api";
+import { BASE_URL } from "../config/api.js";
 
 async function fetchMovies({ title, year, type, page = 1 }) {
     const queryParams = new URLSearchParams({ title, year, type, page: String(page) });

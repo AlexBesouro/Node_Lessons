@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { BASE_URL } from "../config/api";
-import { fetchMovies } from "../api/movieApi";
+import { BASE_URL } from "../config/api.js";
+import { fetchMovies } from "../api/movieApi.js";
 
 function useMovie(searchParams) {
     const [movies, setMovies] = useState([]);
@@ -17,6 +17,8 @@ function useMovie(searchParams) {
                     const movieData = await response.json();
                     data = { movies: [movieData], totalResults: 1 };
                 } else {
+                    // debugger;
+
                     data = await fetchMovies({
                         title: searchParams.title,
                         year: searchParams.year,

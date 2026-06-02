@@ -1,4 +1,3 @@
-import { title } from "process";
 import { fetchMoviesFromApi, fetchMovieById } from "../services/omdbService.js";
 
 const getMovies = async (req, res) => {

@@ -1,0 +1,7 @@
+# GET http://localhost:10000/api/status
+GET http://localhost:10000/api/movies?title=last&year=null&type=null&page=1
+# GET http://localhost:10000/api/movies/tt0816711/short
+# GET http://localhost:10000/api/movies/:id
+# GET http://localhost:10000/api/favorites
+# POST http://localhost:10000/api/favorites
+# DELETE http://localhost:10000/api/favorites/:id
