@@ -1,7 +1,32 @@
-# GET http://localhost:10000/api/status
+### 
+GET http://localhost:10000/api/status
+###
 GET http://localhost:10000/api/movies?title=last&year=null&type=null&page=1
-# GET http://localhost:10000/api/movies/tt0816711/short
-# GET http://localhost:10000/api/movies/:id
-# GET http://localhost:10000/api/favorites
-# POST http://localhost:10000/api/favorites
-# DELETE http://localhost:10000/api/favorites/:id
+###
+GET http://localhost:10000/api/movies/tt0816711/short
+###
+GET http://localhost:10000/api/movies/tt0816711
+###
+GET http://localhost:10000/api/favorites
+###
+POST http://localhost:10000/api/favorites
+Content-Type: application/json
+
+{
+    "id": "tt3915174",
+    "title": "Puss in Boots: The Last Wish",
+    "year": "2022",
+    "type": "movie",
+    "poster": "https://m.media-amazon.com/images/M/MV5BMzg0MWUzMjctYjVlOS00NzVjLWIwZDMtNzg1YzNkYzdjNTMwXkEyXkFqcGc@._V1_SX300.jpg"
+}
+###
+DELETE http://localhost:10000/api/favorites/tt3915174
+Content-Type: application/json
+
+{
+    "id": "tt3915174",
+    "title": "Puss in Boots: The Last Wish",
+    "year": "2022",
+    "type": "movie",
+    "poster": "https://m.media-amazon.com/images/M/MV5BMzg0MWUzMjctYjVlOS00NzVjLWIwZDMtNzg1YzNkYzdjNTMwXkEyXkFqcGc@._V1_SX300.jpg"
+}
