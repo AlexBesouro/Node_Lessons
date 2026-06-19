@@ -3,13 +3,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { readFavorites, writeFavorites } from "../services/favoriteService.js";
 import { fetchMoviesFromApi } from "../services/omdbService.js";
+import { pool } from "../config/database.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const filePath = path.join(__dirname, "../..", "database", "mockDB.json");
 
 const getFavorites = async (req, res) => {
     try {
-        const favorites = await readFavorites();
+        const [favorites] = await pool.execute("SELECT * FROM favorites");
+        // console.log(favorites);
         res.json(favorites);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -17,30 +19,22 @@ const getFavorites = async (req, res) => {
 };
 const addFavorite = async (req, res) => {
     try {
-        const favoritePayload = req.body;
-        const { id } = favoritePayload;
-        const favorites = await readFavorites();
+        const { id, title, year, type, poster } = req.body;
+        if (!id || !title) {
+            return res.status(400).json({ error: "Missing required fields (id, title)" });
+        }
+        const [rows] = await pool.execute("SELECT IMDB_ID FROM favorites WHERE id = ?", [id]);
 
-        let movieToAdd = favoritePayload && favoritePayload.title ? favoritePayload : null;
-
-        if (!movieToAdd) {
-            const allMovies = await fetchMoviesFromApi();
-            movieToAdd = allMovies.find((movie) => String(movie.id) === String(id));
+        if (rows.length > 0) {
+            return res.status(200).json({ message: "Already in favorites", movie: title });
         }
 
-        if (!movieToAdd) {
-            return res.status(404).json({ error: "Movie not found" });
-        }
+        const { movie } = await pool.execute(
+            "INSERT INTO favorites (IMDB_ID, title, year, type, poster) VALUES (?, ?, ?, ?, ?)",
+            [id, title, year, type, poster],
+        );
 
-        const alreadyExists = favorites.some((movie) => String(movie.id) === String(movieToAdd.id));
-
-        if (!alreadyExists) {
-            favorites.push(movieToAdd);
-            await writeFavorites(favorites);
-            return res.status(201).json(favorites);
-        }
-
-        return res.status(200).json(favorites);
+        return res.status(200).json(movie);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
@@ -50,32 +44,22 @@ const addFavorite = async (req, res) => {
 const deleteFavorite = async (req, res) => {
     try {
         const { id } = req.params;
-        const favorites = await readFavorites();
-        const updatedFavorites = favorites.filter((movie) => String(movie.id) !== String(id));
+        if (!id) {
+            return res.status(400).json({ error: "Missing required id field" });
+        }
 
-        await fs.writeFile(filePath, JSON.stringify(updatedFavorites, null, 4), "utf-8");
-        return res.status(200).json(updatedFavorites);
+        const [row] = await pool.execute("SELECT IMDB_ID FROM favorites WHERE id = ?", [id]);
+
+        if (row.length < 1) {
+            return res.status(200).json({ message: `Movie with id ${id} not in favorites` });
+        }
+        await pool.execute("DELETE FROM favorites WHERE id = ?", [id]);
+
+        return res.status(201).json({ message: "Movie deleted from favorites" });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: error.message });
     }
 };
-
-// const updateFavorites = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const { note } = req.body;
-//         const favorites = await readFavorites();
-//         const movieIndex = favorites.findIndex((movie) => String(movie.id) === String(id));
-//         if (movieIndex === -1) {
-//             return res.status(404).json({ error: "Movie not found" });
-//         }
-//         favorites[movieIndex].note = note;
-//         await writeFavorites(favorites);
-//         return res.json(favorites);
-//     } catch (error) {
-//         return res.status(500).json({ error: error.message });
-//     }
-// };
 
 export { getFavorites, addFavorite, deleteFavorite };

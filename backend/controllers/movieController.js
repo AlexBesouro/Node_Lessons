@@ -4,7 +4,7 @@ const getMovies = async (req, res) => {
     try {
         const { title, year, type, page } = req.query;
         const movies = await fetchMoviesFromApi({ title, year, type, page });
-        console.log(movies);
+        // console.log(movies);
         res.json(movies);
     } catch (error) {
         res.status(500).json({ error: error.message });

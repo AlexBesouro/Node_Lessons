@@ -11,7 +11,7 @@ function useFavorites() {
                     throw new Error(response.statusText);
                 }
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
                 setFavorites(data);
             } catch (error) {
                 console.error(`Error fetchin favorites: ${error.message}`);
