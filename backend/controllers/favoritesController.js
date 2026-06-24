@@ -1,16 +1,12 @@
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { readFavorites, writeFavorites } from "../services/favoriteService.js";
 import { fetchMoviesFromApi } from "../services/omdbService.js";
-import { pool } from "../config/database.js";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const filePath = path.join(__dirname, "../..", "database", "mockDB.json");
+import { prisma } from "../config/database.js";
 
 const getFavorites = async (req, res) => {
     try {
-        const [favorites] = await pool.execute("SELECT * FROM favorites");
+        const favorites = await prisma.favorites.findMany();
         // console.log(favorites);
         res.json(favorites);
     } catch (error) {
@@ -23,16 +19,21 @@ const addFavorite = async (req, res) => {
         if (!id || !title) {
             return res.status(400).json({ error: "Missing required fields (id, title)" });
         }
-        const [rows] = await pool.execute("SELECT title FROM favorites WHERE IMDB_ID = ?", [id]);
+        const rows = await prisma.favorites.findFirst({ where: { IMDB_ID: id }, select: { title: true } });
 
-        if (rows.length > 0) {
+        if (rows) {
             return res.status(200).json({ message: "Already in favorites", movie: title });
         }
 
-        const [movie] = await pool.execute(
-            "INSERT INTO favorites (IMDB_ID, title, year, type, poster) VALUES (?, ?, ?, ?, ?)",
-            [id, title, year, type, poster],
-        );
+        const movie = await prisma.favorites.create({
+            data: {
+                IMDB_ID: id,
+                title: title,
+                year: Number(year),
+                type: type,
+                poster: poster,
+            },
+        });
         console.log({ movie: movie, rows: movie.affectedRows });
 
         return res.status(200).json(movie);
@@ -48,13 +49,12 @@ const deleteFavorite = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: "Missing required id field" });
         }
+        const row = await prisma.favorites.findUnique({ where: { id: id } });
 
-        const [row] = await pool.execute("SELECT * FROM favorites WHERE IMDB_ID = ?", [id]);
-
-        if (row.length < 1) {
+        if (!row) {
             return res.status(200).json({ message: `Movie with id ${id} not in favorites` });
         }
-        await pool.execute("DELETE FROM favorites WHERE IMDB_ID = ?", [id]);
+        await prisma.favorites.delete({ where: { id: id } });
 
         return res.status(201).json({ message: "Movie deleted from favorites" });
     } catch (error) {
