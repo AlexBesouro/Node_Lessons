@@ -2,11 +2,13 @@ import express from "express";
 import { getMovies, getMovieById, getMoviesShortInfo } from "../controllers/movieController.js"; //
 import { getFavorites, addFavorite, deleteFavorite } from "../controllers/favoritesController.js";
 import { getStatus } from "../controllers/statusController.js";
+import { getHealth } from "../controllers/healthController.js";
 
 const router = express.Router(); // express.Router() creates a new router object to handle routes for the application
 
 router.get("/movies", getMovies);
 router.get("/status", getStatus);
+router.get("/health", getHealth);
 router.get("/movies/:id/short", getMoviesShortInfo);
 router.get("/movies/:id", getMovieById);
 router.get("/favorites", getFavorites);

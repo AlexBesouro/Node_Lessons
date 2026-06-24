@@ -21,3 +21,13 @@ npm-debug.log*
 
 
 *.tmp
+
+# Prisma
+/generated/prisma
+/prisma
+
+
+# Сборка и зависимости
+dist/
+build/
+.npm

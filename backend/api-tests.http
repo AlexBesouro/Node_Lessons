@@ -1,5 +1,7 @@
 ### 
 GET http://localhost:10000/api/status
+### 
+GET http://localhost:10000/api/health
 ###
 GET http://localhost:10000/api/movies?title=last&year=null&type=null&page=1
 ###

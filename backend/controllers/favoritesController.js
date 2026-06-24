@@ -23,16 +23,17 @@ const addFavorite = async (req, res) => {
         if (!id || !title) {
             return res.status(400).json({ error: "Missing required fields (id, title)" });
         }
-        const [rows] = await pool.execute("SELECT IMDB_ID FROM favorites WHERE id = ?", [id]);
+        const [rows] = await pool.execute("SELECT title FROM favorites WHERE IMDB_ID = ?", [id]);
 
         if (rows.length > 0) {
             return res.status(200).json({ message: "Already in favorites", movie: title });
         }
 
-        const { movie } = await pool.execute(
+        const [movie] = await pool.execute(
             "INSERT INTO favorites (IMDB_ID, title, year, type, poster) VALUES (?, ?, ?, ?, ?)",
             [id, title, year, type, poster],
         );
+        console.log({ movie: movie, rows: movie.affectedRows });
 
         return res.status(200).json(movie);
     } catch (error) {
@@ -48,12 +49,12 @@ const deleteFavorite = async (req, res) => {
             return res.status(400).json({ error: "Missing required id field" });
         }
 
-        const [row] = await pool.execute("SELECT IMDB_ID FROM favorites WHERE id = ?", [id]);
+        const [row] = await pool.execute("SELECT * FROM favorites WHERE IMDB_ID = ?", [id]);
 
         if (row.length < 1) {
             return res.status(200).json({ message: `Movie with id ${id} not in favorites` });
         }
-        await pool.execute("DELETE FROM favorites WHERE id = ?", [id]);
+        await pool.execute("DELETE FROM favorites WHERE IMDB_ID = ?", [id]);
 
         return res.status(201).json({ message: "Movie deleted from favorites" });
     } catch (error) {
